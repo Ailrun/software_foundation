@@ -8,21 +8,17 @@ type 'a option =
 | Some of 'a
 | None
 
-type sumbool =
-| Left
-| Right
+(** val add : int -> int -> int **)
 
-(** val plus : int -> int -> int **)
+let rec add = ( + )
 
-let rec plus = ( + )
+(** val mul : int -> int -> int **)
 
-(** val mult : int -> int -> int **)
+let rec mul = ( * )
 
-let rec mult = ( * )
+(** val sub : int -> int -> int **)
 
-(** val minus : int -> int -> int **)
-
-let rec minus n m =
+let rec sub n m =
   (fun zero succ n ->
       if n=0 then zero () else succ (n-1))
     (fun _ ->
@@ -33,71 +29,51 @@ let rec minus n m =
       (fun _ ->
       n)
       (fun l ->
-      minus k l)
+      sub k l)
       m)
     n
 
-(** val eq_nat_dec : int -> int -> sumbool **)
+module Nat =
+ struct
+  (** val eqb : int -> int -> bool **)
 
-let rec eq_nat_dec n m =
-  (fun zero succ n ->
-      if n=0 then zero () else succ (n-1))
-    (fun _ ->
+  let rec eqb = ( = )
+
+  (** val leb : int -> int -> bool **)
+
+  let rec leb n m =
     (fun zero succ n ->
       if n=0 then zero () else succ (n-1))
       (fun _ ->
-      Left)
-      (fun m0 ->
-      Right)
-      m)
-    (fun n0 ->
-    (fun zero succ n ->
+      true)
+      (fun n' ->
+      (fun zero succ n ->
       if n=0 then zero () else succ (n-1))
-      (fun _ ->
-      Right)
-      (fun m0 ->
-      eq_nat_dec n0 m0)
-      m)
-    n
-
-(** val beq_nat : int -> int -> bool **)
-
-let rec beq_nat = ( = )
-
-(** val ble_nat : int -> int -> bool **)
-
-let rec ble_nat n m =
-  (fun zero succ n ->
-      if n=0 then zero () else succ (n-1))
-    (fun _ ->
-    true)
-    (fun n' ->
-    (fun zero succ n ->
-      if n=0 then zero () else succ (n-1))
-      (fun _ ->
-      false)
-      (fun m' ->
-      ble_nat n' m')
-      m)
-    n
+        (fun _ ->
+        false)
+        (fun m' ->
+        leb n' m')
+        m)
+      n
+ end
 
 type id =
   int
   (* singleton inductive, whose constructor was Id *)
 
-(** val eq_id_dec : id -> id -> sumbool **)
+(** val beq_id : id -> id -> bool **)
 
-let eq_id_dec id1 id2 =
-  eq_nat_dec id1 id2
+let beq_id id1 id2 =
+  Nat.eqb id1 id2
 
-type state = id -> int
+type 'a total_map = id -> 'a
 
-(** val update : state -> id -> int -> state **)
+(** val t_update : 'a1 total_map -> id -> 'a1 -> id -> 'a1 **)
 
-let update st x n x' =
-  match eq_id_dec x x' with
-  | Left -> n
-  | Right -> st x'
+let t_update m x v x' =
+  if beq_id x x' then v else m x'
+
+type state = int total_map
 
 type aexp =
 | ANum of int
@@ -119,17 +95,17 @@ type bexp =
 let rec aeval st = function
 | ANum n -> n
 | AId x -> st x
-| APlus (a1, a2) -> plus (aeval st a1) (aeval st a2)
-| AMinus (a1, a2) -> minus (aeval st a1) (aeval st a2)
-| AMult (a1, a2) -> mult (aeval st a1) (aeval st a2)
+| APlus (a1, a2) -> add (aeval st a1) (aeval st a2)
+| AMinus (a1, a2) -> sub (aeval st a1) (aeval st a2)
+| AMult (a1, a2) -> mul (aeval st a1) (aeval st a2)
 
 (** val beval : state -> bexp -> bool **)
 
 let rec beval st = function
 | BTrue -> true
 | BFalse -> false
-| BEq (a1, a2) -> beq_nat (aeval st a1) (aeval st a2)
-| BLe (a1, a2) -> ble_nat (aeval st a1) (aeval st a2)
+| BEq (a1, a2) -> Nat.eqb (aeval st a1) (aeval st a2)
+| BLe (a1, a2) -> Nat.leb (aeval st a1) (aeval st a2)
 | BNot b1 -> negb (beval st b1)
 | BAnd (b1, b2) -> if beval st b1 then beval st b2 else false
 
@@ -150,7 +126,7 @@ let rec ceval_step st c i =
     (fun i' ->
     match c with
     | CSkip -> Some st
-    | CAss (l, a1) -> Some (update st l (aeval st a1))
+    | CAss (l, a1) -> Some (t_update st l (aeval st a1))
     | CSeq (c1, c2) ->
       (match ceval_step st c1 i' with
        | Some st' -> ceval_step st' c2 i'
@@ -164,4 +140,3 @@ let rec ceval_step st c i =
             | None -> None)
       else Some st)
     i
-

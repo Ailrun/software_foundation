@@ -1,378 +1,338 @@
-(** * ProofObjects: Working with Explicit Evidence in Coq *)
+(** * ProofObjects: The Curry-Howard Correspondence *)
 
-Require Export MoreLogic.
+(** "_Algorithms are the computational content of proofs_."  --Robert Harper *)
 
-(* ##################################################### *)
+Require Export IndProp.
 
-(**  We have seen that Coq has mechanisms both for _programming_,
-    using inductive data types (like [nat] or [list]) and functions
-    over these types, and for _proving_ properties of these programs,
-    using inductive propositions (like [ev] or [eq]), implication, and 
-    universal quantification.  So far, we have treated these mechanisms
-    as if they were quite separate, and for many purposes this is
-    a good way to think. But we have also seen hints that Coq's programming and 
-    proving facilities are closely related. For example, the
-    keyword [Inductive] is used to declare both data types and 
-    propositions, and [->] is used both to describe the type of
-    functions on data and logical implication. This is not just a
-    syntactic accident!  In fact, programs and proofs in Coq are almost
-    the same thing.  In this chapter we will study how this works.
+(** We have seen that Coq has mechanisms both for _programming_,
+    using inductive data types like [nat] or [list] and functions over
+    these types, and for _proving_ properties of these programs, using
+    inductive propositions (like [ev]), implication, universal
+    quantification, and the like.  So far, we have mostly treated
+    these mechanisms as if they were quite separate, and for many
+    purposes this is a good way to think.  But we have also seen hints
+    that Coq's programming and proving facilities are closely related.
+    For example, the keyword [Inductive] is used to declare both data
+    types and propositions, and [->] is used both to describe the type
+    of functions on data and logical implication.  This is not just a
+    syntactic accident!  In fact, programs and proofs in Coq are
+    almost the same thing.  In this chapter we will study how this
+    works.
 
     We have already seen the fundamental idea: provability in Coq is
     represented by concrete _evidence_.  When we construct the proof
-    of a basic proposition, we are actually building a tree of evidence, 
-    which can be thought of as a data structure. If the proposition
-    is an implication like [A -> B], then its proof will be an 
-    evidence _transformer_: a recipe for converting evidence for
-    A into evidence for B.  So at a fundamental level, proofs are simply
-    programs that manipulate evidence.
-*)
-(**
-    Q. If evidence is data, what are propositions themselves?
+    of a basic proposition, we are actually building a tree of
+    evidence, which can be thought of as a data structure.
 
-    A. They are types!
+    If the proposition is an implication like [A -> B], then its proof
+    will be an evidence _transformer_: a recipe for converting
+    evidence for A into evidence for B.  So at a fundamental level,
+    proofs are simply programs that manipulate evidence. *)
 
-    Look again at the formal definition of the [beautiful] property.  *)
+(** Question: If evidence is data, what are propositions themselves?
 
-Print beautiful. 
+    Answer: They are types!
+
+    Look again at the formal definition of the [ev] property.  *)
+
+Print ev.
 (* ==>
-  Inductive beautiful : nat -> Prop :=
-      b_0 : beautiful 0
-    | b_3 : beautiful 3
-    | b_5 : beautiful 5
-    | b_sum : forall n m : nat, beautiful n -> beautiful m -> beautiful (n + m)
+  Inductive ev : nat -> Prop :=
+    | ev_0 : ev 0
+    | ev_SS : forall n, ev n -> ev (S (S n)).
 *)
 
-(** *** *)
+(** Suppose we introduce an alternative pronunciation of "[:]".
+    Instead of "has type," we can say "is a proof of."  For example,
+    the second line in the definition of [ev] declares that [ev_0 : ev
+    0].  Instead of "[ev_0] has type [ev 0]," we can say that "[ev_0]
+    is a proof of [ev 0]." *)
 
-(** The trick is to introduce an alternative pronunciation of "[:]".
-    Instead of "has type," we can also say "is a proof of."  For
-    example, the second line in the definition of [beautiful] declares
-    that [b_0 : beautiful 0].  Instead of "[b_0] has type 
-    [beautiful 0]," we can say that "[b_0] is a proof of [beautiful 0]."
-    Similarly for [b_3] and [b_5]. *)
-
-(** *** *)
-
-(** This pun between types and propositions (between [:] as "has type"
-    and [:] as "is a proof of" or "is evidence for") is called the
+(** This pun between types and propositions -- between [:] as "has type"
+    and [:] as "is a proof of" or "is evidence for" -- is called the
     _Curry-Howard correspondence_.  It proposes a deep connection
-    between the world of logic and the world of computation.
-<<
+    between the world of logic and the world of computation:
+
                  propositions  ~  types
                  proofs        ~  data values
->>
-    Many useful insights follow from this connection.  To begin with, it
-    gives us a natural interpretation of the type of [b_sum] constructor: *)
 
-Check b_sum.
-(* ===> b_sum : forall n m, 
-                  beautiful n -> 
-                  beautiful m -> 
-                  beautiful (n+m) *)
-(** This can be read "[b_sum] is a constructor that takes four
-    arguments -- two numbers, [n] and [m], and two pieces of evidence,
-    for the propositions [beautiful n] and [beautiful m], respectively -- 
-    and yields evidence for the proposition [beautiful (n+m)]." *)
+    See [Wadler 2015] for a brief history and an up-to-date exposition.
 
-(** Now let's look again at a previous proof involving [beautiful]. *)
+    Many useful insights follow from this connection.  To begin with,
+    it gives us a natural interpretation of the type of the [ev_SS]
+    constructor: *)
 
-Theorem eight_is_beautiful: beautiful 8.
+Check ev_SS.
+(* ===> ev_SS : forall n,
+                  ev n ->
+                  ev (S (S n)) *)
+
+(** This can be read "[ev_SS] is a constructor that takes two
+    arguments -- a number [n] and evidence for the proposition [ev
+    n] -- and yields evidence for the proposition [ev (S (S n))]." *)
+
+(** Now let's look again at a previous proof involving [ev]. *)
+
+Theorem ev_4 : ev 4.
 Proof.
-    apply b_sum with (n := 3) (m := 5). 
-    apply b_3.
-    apply b_5. Qed.
+  apply ev_SS. apply ev_SS. apply ev_0. Qed.
 
-(** Just as with ordinary data values and functions, we can use the [Print]
-command to see the _proof object_ that results from this proof script. *)
+(** As with ordinary data values and functions, we can use the [Print]
+    command to see the _proof object_ that results from this proof
+    script. *)
 
-Print eight_is_beautiful.
-(* ===> eight_is_beautiful = b_sum 3 5 b_3 b_5  
-     : beautiful 8  *)
+Print ev_4.
+(* ===> ev_4 = ev_SS 2 (ev_SS 0 ev_0)
+     : ev 4  *)
 
-(** In view of this, we might wonder whether we can write such
-    an expression ourselves. Indeed, we can: *)
+(** As a matter of fact, we can also write down this proof object
+    _directly_, without the need for a separate proof script: *)
 
-Check (b_sum 3 5 b_3 b_5).  
-(* ===> beautiful (3 + 5) *)
+Check (ev_SS 2 (ev_SS 0 ev_0)).
+(* ===> ev 4 *)
 
-(** The expression [b_sum 3 5 b_3 b_5] can be thought of as
-    instantiating the parameterized constructor [b_sum] with the
-    specific arguments [3] [5] and the corresponding proof objects for
-    its premises [beautiful 3] and [beautiful 5] (Coq is smart enough
-    to figure out that 3+5=8).  Alternatively, we can think of [b_sum]
-    as a primitive "evidence constructor" that, when applied to two
-    particular numbers, wants to be further applied to evidence that
-    those two numbers are beautiful; its type, 
-    forall n m, beautiful n -> beautiful m -> beautiful (n+m),
+(** The expression [ev_SS 2 (ev_SS 0 ev_0)] can be thought of as
+    instantiating the parameterized constructor [ev_SS] with the
+    specific arguments [2] and [0] plus the corresponding proof
+    objects for its premises [ev 2] and [ev 0].  Alternatively, we can
+    think of [ev_SS] as a primitive "evidence constructor" that, when
+    applied to a particular number, wants to be further applied to
+    evidence that that number is even; its type,
+
+      forall n, ev n -> ev (S (S n)),
+
     expresses this functionality, in the same way that the polymorphic
-    type [forall X, list X] in the previous chapter expressed the fact
-    that the constructor [nil] can be thought of as a function from
-    types to empty lists with elements of that type. *)
+    type [forall X, list X] expresses the fact that the constructor
+    [nil] can be thought of as a function from types to empty lists
+    with elements of that type. *)
 
-(** This gives us an alternative way to write the proof that [8] is
-    beautiful: *)
+(** You may recall (as seen in the [Logic] chapter) that we can
+    use function application syntax to instantiate universally
+    quantified variables in lemmas, as well as to supply evidence for
+    assumptions that these lemmas impose. For instance: *)
 
-Theorem eight_is_beautiful': beautiful 8.
+Theorem ev_4': ev 4.
 Proof.
-   apply (b_sum 3 5 b_3 b_5).
+  apply (ev_SS 2 (ev_SS 0 ev_0)).
 Qed.
 
-(** Notice that we're using [apply] here in a new way: instead of just
-    supplying the _name_ of a hypothesis or previously proved theorem
-    whose type matches the current goal, we are supplying an
-    _expression_ that directly builds evidence with the required
-    type. *)
+(** We can now see that this feature is a trivial consequence of the
+    status the Coq grants to proofs and propositions: Lemmas and
+    hypotheses can be combined in expressions (i.e., proof objects)
+    according to the same basic rules used for programs in the
+    language. *)
 
+(* ################################################################# *)
+(** * Proof Scripts *)
 
-(* ##################################################### *)
-(** * Proof Scripts and Proof Objects *)
+(** The _proof objects_ we've been discussing lie at the core of how
+    Coq operates.  When Coq is following a proof script, what is
+    happening internally is that it is gradually constructing a proof
+    object -- a term whose type is the proposition being proved.  The
+    tactics between [Proof] and [Qed] tell it how to build up a term
+    of the required type.  To see this process in action, let's use
+    the [Show Proof] command to display the current state of the proof
+    tree at various points in the following tactic proof. *)
 
-(** These proof objects lie at the core of how Coq operates. 
-
-    When Coq is following a proof script, what is happening internally
-    is that it is gradually constructing a proof object -- a term
-    whose type is the proposition being proved.  The tactics between
-    the [Proof] command and the [Qed] instruct Coq how to build up a
-    term of the required type.  To see this process in action, let's
-    use the [Show Proof] command to display the current state of the
-    proof tree at various points in the following tactic proof. *)
-
-Theorem eight_is_beautiful'': beautiful 8.
+Theorem ev_4'' : ev 4.
 Proof.
-   Show Proof.
-   apply b_sum with (n:=3) (m:=5).
-   Show Proof.
-   apply b_3.
-   Show Proof.
-   apply b_5.
-   Show Proof.
+  Show Proof.
+  apply ev_SS.
+  Show Proof.
+  apply ev_SS.
+  Show Proof.
+  apply ev_0.
+  Show Proof.
 Qed.
 
 (** At any given moment, Coq has constructed a term with some
     "holes" (indicated by [?1], [?2], and so on), and it knows what
     type of evidence is needed at each hole.  *)
 
-(**
-    Each of the holes corresponds to a subgoal, and the proof is
+(** Each of the holes corresponds to a subgoal, and the proof is
     finished when there are no more subgoals.  At this point, the
-    [Theorem] command gives a name to the evidence we've built and
-    stores it in the global context. *)
+    evidence we've built stored in the global context under the name
+    given in the [Theorem] command. *)
 
 (** Tactic proofs are useful and convenient, but they are not
     essential: in principle, we can always construct the required
-    evidence by hand, as shown above. Then we can use [Definition] 
-    (rather than [Theorem]) to give a global name directly to a 
+    evidence by hand, as shown above. Then we can use [Definition]
+    (rather than [Theorem]) to give a global name directly to a
     piece of evidence. *)
 
-Definition eight_is_beautiful''' : beautiful 8 :=
-  b_sum 3 5 b_3 b_5.
+Definition ev_4''' : ev 4 :=
+  ev_SS 2 (ev_SS 0 ev_0).
 
 (** All these different ways of building the proof lead to exactly the
     same evidence being saved in the global environment. *)
 
-Print eight_is_beautiful.
-(* ===> eight_is_beautiful    = b_sum 3 5 b_3 b_5 : beautiful 8 *)
-Print eight_is_beautiful'.
-(* ===> eight_is_beautiful'   = b_sum 3 5 b_3 b_5 : beautiful 8 *)
-Print eight_is_beautiful''.
-(* ===> eight_is_beautiful''  = b_sum 3 5 b_3 b_5 : beautiful 8 *)
-Print eight_is_beautiful'''.
-(* ===> eight_is_beautiful''' = b_sum 3 5 b_3 b_5 : beautiful 8 *)
+Print ev_4.
+(* ===> ev_4    =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)
+Print ev_4'.
+(* ===> ev_4'   =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)
+Print ev_4''.
+(* ===> ev_4''  =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)
+Print ev_4'''.
+(* ===> ev_4''' =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)
 
-(** **** Exercise: 1 star (six_is_beautiful)  *)
-(** Give a tactic proof and a proof object showing that [6] is [beautiful]. *)
+(** **** Exercise: 1 star (eight_is_even)  *)
+(** Give a tactic proof and a proof object showing that [ev 8]. *)
 
-Theorem six_is_beautiful :
-  beautiful 6.
+Theorem ev_8 : ev 8.
 Proof.
   (* FILL IN HERE *) Admitted.
 
-Definition six_is_beautiful' : beautiful 6 :=
+Definition ev_8' : ev 8 :=
   (* FILL IN HERE *) admit.
 (** [] *)
 
-(** **** Exercise: 1 star (nine_is_beautiful)  *)
-(** Give a tactic proof and a proof object showing that [9] is [beautiful]. *)
+(* ################################################################# *)
+(** * Quantifiers, Implications, Functions *)
 
-Theorem nine_is_beautiful :
-  beautiful 9.
-Proof.
-  (* FILL IN HERE *) Admitted.
+(** In Coq's computational universe (where data structures and
+    programs live), there are two sorts of values with arrows in their
+    types: _constructors_ introduced by [Inductive]-ly defined data
+    types, and _functions_.
 
-Definition nine_is_beautiful' : beautiful 9 :=
-  (* FILL IN HERE *) admit.
-(** [] *)
-
-(* ##################################################### *)
-(** * Quantification, Implications and Functions *)
-
-(** In Coq's computational universe (where we've mostly been living
-    until this chapter), there are two sorts of values with arrows in
-    their types: _constructors_ introduced by [Inductive]-ly defined
-    data types, and _functions_.
-
-    Similarly, in Coq's logical universe, there are two ways of giving
-    evidence for an implication: constructors introduced by
-    [Inductive]-ly defined propositions, and... functions!
+    Similarly, in Coq's logical universe (where we carry out proofs),
+    there are two ways of giving evidence for an implication:
+    constructors introduced by [Inductive]-ly defined propositions,
+    and... functions!
 
     For example, consider this statement: *)
 
-Theorem b_plus3: forall n, beautiful n -> beautiful (3+n).
+Theorem ev_plus4 : forall n, ev n -> ev (4 + n).
 Proof.
-   intros n H.
-   apply b_sum.
-   apply b_3.
-   apply H.
+  intros n H. simpl.
+  apply ev_SS.
+  apply ev_SS.
+  apply H.
 Qed.
 
-(** What is the proof object corresponding to [b_plus3]? 
+(** What is the proof object corresponding to [ev_plus4]?
 
-    We're looking for an expression whose _type_ is [forall n,
-    beautiful n -> beautiful (3+n)] -- that is, a _function_ that
-    takes two arguments (one number and a piece of evidence) and
-    returns a piece of evidence!  Here it is: *)
+    We're looking for an expression whose _type_ is [forall n, ev n ->
+    ev (4 + n)] -- that is, a _function_ that takes two arguments (one
+    number and a piece of evidence) and returns a piece of evidence!
+    Here it is: *)
 
-Definition b_plus3' : forall n, beautiful n -> beautiful (3+n) := 
-  fun (n : nat) => fun (H : beautiful n) =>
-    b_sum 3 n b_3 H.
+Definition ev_plus4' : forall n, ev n -> ev (4 + n) :=
+  fun (n : nat) => fun (H : ev n) =>
+    ev_SS (S (S n)) (ev_SS n H).
 
-Check b_plus3'.
-(* ===> b_plus3' : forall n : nat, beautiful n -> beautiful (3+n) *)
+Check ev_plus4'.
+(* ===> ev_plus4' : forall n : nat, ev n -> ev (4 + n) *)
 
 (** Recall that [fun n => blah] means "the function that, given [n],
-    yields [blah]."  Another equivalent way to write this definition is: *)
+    yields [blah]," and that Coq treats [4 + n] and [S (S (S (S n)))]
+    as synonyms. Another equivalent way to write this definition is: *)
 
-Definition b_plus3'' (n : nat) (H : beautiful n) : beautiful (3+n) := 
-  b_sum 3 n b_3 H.
+Definition ev_plus4'' (n : nat) (H : ev n) : ev (4 + n) :=
+  ev_SS (S (S n)) (ev_SS n H).
 
-Check b_plus3''.
-(* ===> b_plus3'' : forall n, beautiful n -> beautiful (3+n) *)
+Check ev_plus4''.
+(* ===> ev_plus4'' : forall n : nat, ev n -> ev (4 + n) *)
 
-(** When we view the proposition being proved by [b_plus3] as a function type,
-    one aspect of it may seem a little unusual. The second argument's
-    type, [beautiful n], mentions the _value_ of the first argument, [n].
-    While such _dependent types_ are not commonly found in programming
-    languages, even functional ones like ML or Haskell, they can
-    be useful there too.  
+(** When we view the proposition being proved by [ev_plus4] as a
+    function type, one aspect of it may seem a little unusual. The
+    second argument's type, [ev n], mentions the _value_ of the first
+    argument, [n].  While such _dependent types_ are not found in
+    conventional programming languages, they can be useful in
+    programming too, as recent work in the functional programming
+    community demonstrates.
 
     Notice that both implication ([->]) and quantification ([forall])
     correspond to functions on evidence.  In fact, they are really the
     same thing: [->] is just a shorthand for a degenerate use of
-    [forall] where there is no dependency, i.e., no need to give a name
-    to the type on the LHS of the arrow. *)                                           
+    [forall] where there is no dependency, i.e., no need to give a
+    name to the type on the LHS of the arrow. *)
 
 (** For example, consider this proposition: *)
 
-Definition beautiful_plus3 : Prop := 
-  forall n, forall (E : beautiful n), beautiful (n+3).
+Definition ev_plus2 : Prop :=
+  forall n, forall (E : ev n), ev (n + 2).
 
 (** A proof term inhabiting this proposition would be a function
     with two arguments: a number [n] and some evidence [E] that [n] is
-    beautiful.  But the name [E] for this evidence is not used in the
-    rest of the statement of [funny_prop1], so it's a bit silly to
-    bother making up a name for it.  We could write it like this
-    instead, using the dummy identifier [_] in place of a real
-    name: *)
+    even.  But the name [E] for this evidence is not used in the rest
+    of the statement of [ev_plus2], so it's a bit silly to bother
+    making up a name for it.  We could write it like this instead,
+    using the dummy identifier [_] in place of a real name: *)
 
-Definition beautiful_plus3' : Prop := 
-  forall n, forall (_ : beautiful n), beautiful (n+3).
+Definition ev_plus2' : Prop :=
+  forall n, forall (_ : ev n), ev (n + 2).
 
 (** Or, equivalently, we can write it in more familiar notation: *)
 
-Definition beatiful_plus3'' : Prop :=
-  forall n, beautiful n -> beautiful (n+3). 
+Definition ev_plus2'' : Prop :=
+  forall n, ev n -> ev (n + 2).
 
 (** In general, "[P -> Q]" is just syntactic sugar for
     "[forall (_:P), Q]". *)
 
+(* ################################################################# *)
+(** * Connectives as Inductive Types *)
 
-(** **** Exercise: 2 stars b_times2  *)
+(** Inductive definitions are powerful enough to express most of the
+    connectives and quantifiers we have seen so far.  Indeed, only
+    universal quantification (and thus implication) is built into Coq;
+    all the others are defined inductively.  We study these
+    definitions in this section. *)
 
-(** Give a proof object corresponding to the theorem [b_times2] from Prop.v *)
+Module Props.
 
-Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
-  (* FILL IN HERE *) admit.
-(** [] *)
+(** ** Conjunction
 
+    To prove that [P /\ Q] holds, we must present evidence for both
+    [P] and [Q].  Thus, it makes sense to define a proof object for [P
+    /\ Q] as consisting of a pair of two proofs: one for [P] and
+    another one for [Q]. This leads to the following definition. *)
 
+Module And.
 
-(** **** Exercise: 2 stars, optional (gorgeous_plus13_po)  *) 
-(** Give a proof object corresponding to the theorem [gorgeous_plus13] from Prop.v *)
+Inductive and (P Q : Prop) : Prop :=
+| conj : P -> Q -> and P Q.
 
-Definition gorgeous_plus13_po: forall n, gorgeous n -> gorgeous (13+n):=
-   (* FILL IN HERE *) admit.
-(** [] *)
+End And.
 
+(** Notice the similarity with the definition of the [prod] type,
+    given in chapter [Poly]; the only difference is that [prod] takes
+    [Type] arguments, whereas [and] takes [Prop] arguments. *)
 
-
-
-(** It is particularly revealing to look at proof objects involving the 
-logical connectives that we defined with inductive propositions in Logic.v. *)
-
-Theorem and_example : 
-  (beautiful 0) /\ (beautiful 3).
-Proof.
-  apply conj.
-   (* Case "left". *)  apply b_0.
-   (* Case "right". *)  apply b_3.  Qed.
-
-(** Let's take a look at the proof object for the above theorem. *)
-
-Print and_example. 
-(* ===>  conj (beautiful 0) (beautiful 3) b_0 b_3
-            : beautiful 0 /\ beautiful 3 *)
-
-(** Note that the proof is of the form
-    conj (beautiful 0) (beautiful 3) 
-         (...pf of beautiful 3...) (...pf of beautiful 3...)
-    as you'd expect, given the type of [conj]. *)
-
-(** **** Exercise: 1 star, optional (case_proof_objects)  *)
-(** The [Case] tactics were commented out in the proof of
-    [and_example] to avoid cluttering the proof object.  What would
-    you guess the proof object will look like if we uncomment them?
-    Try it and see. *)
-(** [] *)
-
-Theorem and_commut : forall P Q : Prop, 
-  P /\ Q -> Q /\ P.
-Proof.
-  intros P Q H.
-  inversion H as [HP HQ]. 
-  split.  
-    (* Case "left". *) apply HQ. 
-    (* Case "right". *) apply HP.  Qed.
-
-(** Once again, we have commented out the [Case] tactics to make the
-    proof object for this theorem easier to understand. It is still
-    a little complicated, but after performing some simple reduction
-    steps, we can see that all that is really happening is taking apart 
-    a record containing evidence for [P] and [Q] and rebuilding it in the
-    opposite order: *)
-
-Print and_commut.
+Print prod.
 (* ===>
-    and_commut = 
-      fun (P Q : Prop) (H : P /\ Q) =>
-        (fun H0 : Q /\ P => H0)
-            match H with
-            | conj HP HQ => (fun (HP0 : P) (HQ0 : Q) => conj Q P HQ0 HP0) HP HQ
-            end
-      : forall P Q : Prop, P /\ Q -> Q /\ P *)
+   Inductive prod (X Y : Type) : Type :=
+   | pair : X -> Y -> X * Y. *)
 
-(** After simplifying some direct application of [fun] expressions to arguments,
-we get: *)
+(** This should clarify why [destruct] and [intros] patterns can be
+    used on a conjunctive hypothesis.  Case analysis allows us to
+    consider all possible ways in which [P /\ Q] was proved -- here
+    just one (the [conj] constructor).  Similarly, the [split] tactic
+    actually works for any inductively defined proposition with only
+    one constructor.  In particular, it works for [and]: *)
 
-(* ===> 
-   and_commut = 
-     fun (P Q : Prop) (H : P /\ Q) =>
-     match H with
-     | conj HP HQ => conj Q P HQ HP
-     end 
-     : forall P Q : Prop, P /\ Q -> Q /\ P *)
+Lemma and_comm : forall P Q : Prop, P /\ Q <-> Q /\ P.
+Proof.
+  intros P Q. split.
+  - intros [HP HQ]. split.
+    + apply HQ.
+    + apply HP.
+  - intros [HP HQ]. split.
+    + apply HQ.
+    + apply HP.
+Qed.
 
+(** This shows why the inductive definition of [and] can be
+    manipulated by tactics as we've been doing.  We can also use it to
+    build proofs directly, using pattern-matching.  For instance: *)
 
+Definition and_comm'_aux P Q (H : P /\ Q) :=
+  match H with
+  | conj HP HQ => conj HQ HP
+  end.
+
+Definition and_comm' P Q : P /\ Q <-> Q /\ P :=
+  conj (and_comm'_aux P Q) (and_comm'_aux Q P).
 
 (** **** Exercise: 2 stars, optional (conj_fact)  *)
 (** Construct a proof object demonstrating the following proposition. *)
@@ -381,157 +341,252 @@ Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
   (* FILL IN HERE *) admit.
 (** [] *)
 
+(** ** Disjunction
 
-(** **** Exercise: 2 stars, advanced, optional (beautiful_iff_gorgeous)  *)
+    The inductive definition of disjunction uses two constructors, one
+    for each side of the disjunct: *)
 
-(** We have seen that the families of propositions [beautiful] and
-    [gorgeous] actually characterize the same set of numbers.
-    Prove that [beautiful n <-> gorgeous n] for all [n].  Just for
-    fun, write your proof as an explicit proof object, rather than
-    using tactics. (_Hint_: if you make use of previously defined
-    theorems, you should only need a single line!) *)
+Module Or.
 
-Definition beautiful_iff_gorgeous :
-  forall n, beautiful n <-> gorgeous n :=
-  (* FILL IN HERE *) admit.
-(** [] *)
+Inductive or (P Q : Prop) : Prop :=
+| or_introl : P -> or P Q
+| or_intror : Q -> or P Q.
 
+End Or.
+
+(** This declaration explains the behavior of the [destruct] tactic on
+    a disjunctive hypothesis, since the generated subgoals match the
+    shape of the [or_introl] and [or_intror] constructors.
+
+    Once again, we can also directly write proof objects for theorems
+    involving [or], without resorting to tactics. *)
 
 (** **** Exercise: 2 stars, optional (or_commut'')  *)
 (** Try to write down an explicit proof object for [or_commut] (without
     using [Print] to peek at the ones we already defined!). *)
 
-(* FILL IN HERE *)
+Definition or_comm : forall P Q, P \/ Q -> Q \/ P :=
+  (* FILL IN HERE *) admit.
 (** [] *)
 
-(** Recall that we model an existential for a property as a pair consisting of 
-a witness value and a proof that the witness obeys that property. 
-We can choose to construct the proof explicitly. 
+(** ** Existential Quantification
 
-For example, consider this existentially quantified proposition: *)
-Check ex.
+    To give evidence for an existential quantifier, we package a
+    witness [x] together with a proof that [x] satisfies the property
+    [P]: *)
 
-Definition some_nat_is_even : Prop := 
-  ex _ ev.
+Module Ex.
 
-(** To prove this proposition, we need to choose a particular number
-    as witness -- say, 4 -- and give some evidence that that number is
-    even. *)
+Inductive ex {A : Type} (P : A -> Prop) : Prop :=
+| ex_intro : forall x : A, P x -> ex P.
 
-Definition snie : some_nat_is_even := 
-  ex_intro _ ev 4 (ev_SS 2 (ev_SS 0 ev_0)).
+End Ex.
 
+(** This may benefit from a little unpacking.  The core definition is
+    for a type former [ex] that can be used to build propositions of
+    the form [ex P], where [P] itself is a _function_ from witness
+    values in the type [A] to propositions.  The [ex_intro]
+    constructor then offers a way of constructing evidence for [ex P],
+    given a witness [x] and a proof of [P x].
 
-(** **** Exercise: 2 stars, optional (ex_beautiful_Sn)  *)
+    The more familiar form [exists x, P x] desugars to an expression
+    involving [ex]: *)
+
+Check ex (fun n => ev n).
+(* ===> exists n : nat, ev n
+        : Prop *)
+
+(** Here's how to define an explicit proof object involving [ex]: *)
+
+Definition some_nat_is_even : exists n, ev n :=
+  ex_intro ev 4 (ev_SS 2 (ev_SS 0 ev_0)).
+
+(** **** Exercise: 2 stars, optional (ex_ev_Sn)  *)
 (** Complete the definition of the following proof object: *)
 
-Definition p : ex _ (fun n => beautiful (S n)) :=
+Definition ex_ev_Sn : ex (fun n => ev (S n)) :=
 (* FILL IN HERE *) admit.
 (** [] *)
 
+(* ================================================================= *)
+(** ** [True] and [False] *)
 
+(** The inductive definition of the [True] proposition is simple: *)
 
-(* ##################################################### *)
-(** * Giving Explicit Arguments to Lemmas and Hypotheses *)
+Inductive True : Prop :=
+  I : True.
 
-(** Even when we are using tactic-based proof, it can be very useful to
-understand the underlying functional nature of implications and quantification. 
+(** It has one constructor (so every proof of [True] is the same, so
+    being given a proof of [True] is not informative.) *)
 
-For example, it is often convenient to [apply] or [rewrite] 
-using a lemma or hypothesis with one or more quantifiers or 
-assumptions already instantiated in order to direct what
-happens.  For example: *)
+(** [False] is equally simple -- indeed, so simple it may look
+    syntactically wrong at first glance! *)
 
-Check plus_comm.
-(* ==> 
-    plus_comm
-     : forall n m : nat, n + m = m + n *)
+Inductive False : Prop :=.
 
-Lemma plus_comm_r : forall a b c, c + (b + a) = c + (a + b).
-Proof.
-   intros a b c.
-   (* rewrite plus_comm. *) 
-      (* rewrites in the first possible spot; not what we want *)
-   rewrite (plus_comm b a).  (* directs rewriting to the right spot *)
-   reflexivity.  Qed.
+(** That is, [False] is an inductive type with _no_ constructors --
+    i.e., no way to build evidence for it. *)
 
+End Props.
 
-(** In this case, giving just one argument would be sufficient. *)
+(* ################################################################# *)
+(** * Programming with Tactics *)
 
-Lemma plus_comm_r' : forall a b c, c + (b + a) = c + (a + b).
-Proof.
-   intros a b c.
-   rewrite (plus_comm b). 
-   reflexivity.  Qed.
+(** If we can build proofs by giving explicit terms rather than
+    executing tactic scripts, you may be wondering whether we can
+    build _programs_ using _tactics_ rather than explicit terms.
+    Naturally, the answer is yes! *)
 
-(** Arguments must be given in order, but wildcards (_)
-may be used to skip arguments that Coq can infer.  *)
-
-Lemma plus_comm_r'' : forall a b c, c + (b + a) = c + (a + b).
-Proof.
-  intros a b c.
-  rewrite (plus_comm _ a).
-  reflexivity. Qed.
-
-(** The author of a lemma can choose to declare easily inferable arguments
-to be implicit, just as with functions and constructors. 
-
-  The [with] clauses we've already seen is really just a way of
-  specifying selected arguments by name rather than position:  *)
-
-Lemma plus_comm_r''' : forall a b c, c + (b + a) = c + (a + b).
-Proof.
-  intros a b c.
-  rewrite plus_comm with (n := b). 
-  reflexivity. Qed.
-
-
-(** **** Exercise: 2 stars (trans_eq_example_redux)  *)
-(** Redo the proof of the following theorem (from MoreCoq.v) using
-an [apply] of [trans_eq] but _not_ using a [with] clause. *)
-
-Example trans_eq_example' : forall (a b c d e f : nat),
-     [a;b] = [c;d] ->
-     [c;d] = [e;f] ->
-     [a;b] = [e;f].
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
-
-
-
-(* ##################################################### *)
-(** * Programming with Tactics (Advanced) *)
-
-(** If we can build proofs with explicit terms rather than tactics,
-    you may be wondering if we can build programs using tactics rather
-    than explicit terms.  Sure! *)
-
-Definition add1 : nat -> nat. 
-intro n. 
+Definition add1 : nat -> nat.
+intro n.
 Show Proof.
-apply S. 
+apply S.
 Show Proof.
 apply n. Defined.
 
-Print add1. 
+Print add1.
 (* ==>
     add1 = fun n : nat => S n
          : nat -> nat
 *)
 
-Eval compute in add1 2. 
+Compute add1 2.
 (* ==> 3 : nat *)
 
-(** Notice that we terminate the [Definition] with a [.] rather than with
-[:=] followed by a term.  This tells Coq to enter proof scripting mode
-to build an object of type [nat -> nat].  Also, we terminate the proof
-with [Defined] rather than [Qed]; this makes the definition _transparent_
-so that it can be used in computation like a normally-defined function.  
+(** Notice that we terminate the [Definition] with a [.] rather than
+    with [:=] followed by a term.  This tells Coq to enter _proof
+    scripting mode_ to build an object of type [nat -> nat].  Also, we
+    terminate the proof with [Defined] rather than [Qed]; this makes
+    the definition _transparent_ so that it can be used in computation
+    like a normally-defined function.  ([Qed]-defined objects are
+    opaque during computation.)
 
-This feature is mainly useful for writing functions with dependent types,
-which we won't explore much further in this book.
-But it does illustrate the uniformity and orthogonality of the basic ideas in Coq. *)
+    This feature is mainly useful for writing functions with dependent
+    types, which we won't explore much further in this book.  But it
+    does illustrate the uniformity and orthogonality of the basic
+    ideas in Coq. *)
 
-(** $Date: 2014-12-31 15:31:47 -0500 (Wed, 31 Dec 2014) $ *)
+(* ################################################################# *)
+(** * Equality *)
+
+(** Even Coq's equality relation is not built in.  It has the
+    following inductive definition.  (Actually, the definition in the
+    standard library is a small variant of this, which gives an
+    induction principle that is slightly easier to use.) *)
+
+Module MyEquality.
+
+Inductive eq {X:Type} : X -> X -> Prop :=
+| eq_refl : forall x, eq x x.
+
+Notation "x = y" := (eq x y)
+                    (at level 70, no associativity)
+                    : type_scope.
+
+(** The way to think about this definition is that, given a set [X],
+    it defines a _family_ of propositions "[x] is equal to [y],"
+    indexed by pairs of values ([x] and [y]) from [X].  There is just
+    one way of constructing evidence for each member of this family:
+    applying the constructor [eq_refl] to a type [X] and a value [x :
+    X] yields evidence that [x] is equal to [x]. *)
+
+(** **** Exercise: 2 stars (leibniz_equality)  *)
+(** The inductive definition of equality corresponds to _Leibniz
+    equality_: what we mean when we say "[x] and [y] are equal" is
+    that every property on [P] that is true of [x] is also true of
+    [y].  *)
+
+Lemma leibniz_equality : forall (X : Type) (x y: X),
+  x = y -> forall P:X->Prop, P x -> P y.
+Proof.
+(* FILL IN HERE *) Admitted.
+(** [] *)
+
+(** We can use [eq_refl] to construct evidence that, for example, [2 =
+    2].  Can we also use it to construct evidence that [1 + 1 = 2]?
+    Yes, we can.  Indeed, it is the very same piece of evidence!  The
+    reason is that Coq treats as "the same" any two terms that are
+    _convertible_ according to a simple set of computation rules.
+    These rules, which are similar to those used by [Compute], include
+    evaluation of function application, inlining of definitions, and
+    simplification of [match]es.  *)
+
+Lemma four: 2 + 2 = 1 + 3.
+Proof.
+  apply eq_refl.
+Qed.
+
+(** The [reflexivity] tactic that we have used to prove equalities up
+    to now is essentially just short-hand for [apply refl_equal].
+
+    In tactic-based proofs of equality, the conversion rules are
+    normally hidden in uses of [simpl] (either explicit or implicit in
+    other tactics such as [reflexivity]).  But you can see them
+    directly at work in the following explicit proof objects: *)
+
+Definition four' : 2 + 2 = 1 + 3 :=
+  eq_refl 4.
+
+Definition singleton : forall (X:Set) (x:X), []++[x] = x::[]  :=
+  fun (X:Set) (x:X) => eq_refl [x].
+
+
+End MyEquality.
+
+Definition quiz6 : exists x,  x + 3 = 4
+  := ex_intro (fun z => (z + 3 = 4)) 1 (refl_equal 4).
+
+(* ================================================================= *)
+(** ** Inversion, Again *)
+
+(** We've seen [inversion] used with both equality hypotheses and
+    hypotheses about inductively defined propositions.  Now that we've
+    seen that these are actually the same thing, we're in a position
+    to take a closer look at how [inversion] behaves.
+
+    In general, the [inversion] tactic...
+
+    - takes a hypothesis [H] whose type [P] is inductively defined,
+      and
+
+    - for each constructor [C] in [P]'s definition,
+
+      - generates a new subgoal in which we assume [H] was
+        built with [C],
+
+      - adds the arguments (premises) of [C] to the context of
+        the subgoal as extra hypotheses,
+
+      - matches the conclusion (result type) of [C] against the
+        current goal and calculates a set of equalities that must
+        hold in order for [C] to be applicable,
+
+      - adds these equalities to the context (and, for convenience,
+        rewrites them in the goal), and
+
+      - if the equalities are not satisfiable (e.g., they involve
+        things like [S n = O]), immediately solves the subgoal. *)
+
+(** _Example_: If we invert a hypothesis built with [or], there are two
+   constructors, so two subgoals get generated.  The
+   conclusion (result type) of the constructor ([P \/ Q]) doesn't
+   place any restrictions on the form of [P] or [Q], so we don't get
+   any extra equalities in the context of the subgoal.
+
+   _Example_: If we invert a hypothesis built with [and], there is
+   only one constructor, so only one subgoal gets generated.  Again,
+   the conclusion (result type) of the constructor ([P /\ Q]) doesn't
+   place any restrictions on the form of [P] or [Q], so we don't get
+   any extra equalities in the context of the subgoal.  The
+   constructor does have two arguments, though, and these can be seen
+   in the context in the subgoal.
+
+   _Example_: If we invert a hypothesis built with [eq], there is
+   again only one constructor, so only one subgoal gets generated.
+   Now, though, the form of the [refl_equal] constructor does give us
+   some extra information: it tells us that the two arguments to [eq]
+   must be the same!  The [inversion] tactic adds this fact to the
+   context. *)
+
+(** $Date: 2016-05-26 16:17:19 -0400 (Thu, 26 May 2016) $ *)
 

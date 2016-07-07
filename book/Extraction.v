@@ -1,18 +1,22 @@
 (** * Extraction: Extracting ML from Coq *)
 
+(* ################################################################# *)
 (** * Basic Extraction *)
 
-(** In its simplest form, program extraction from Coq is completely straightforward. *)
+(** In its simplest form, extracting an efficient program from one
+    written in Coq is completely straightforward. 
 
-(** First we say what language we want to extract into.  Options are OCaml (the
-     most mature), Haskell (which mostly works), and Scheme (a bit out
-     of date). *)
+    First we say what language we want to extract into.  Options are
+    OCaml (the most mature), Haskell (which mostly works), and
+    Scheme (a bit out of date). *)
 
 Extraction Language Ocaml.
 
 (** Now we load up the Coq environment with some definitions, either
     directly or by importing them from other modules. *)
 
+Require Import Coq.Arith.Arith.
+Require Import Coq.Arith.EqNat.
 Require Import SfLib.
 Require Import ImpCEvalFun.
 
@@ -23,10 +27,10 @@ Extraction "imp1.ml" ceval_step.
 
 (** When Coq processes this command, it generates a file [imp1.ml]
     containing an extracted version of [ceval_step], together with
-    everything that it recursively depends on.  Have a look at this
-    file now. *)
+    everything that it recursively depends on.  Compile the present
+    [.v] file and have a look at [imp1.ml] now. *)
 
-(* ############################################################## *)
+(* ################################################################# *)
 (** * Controlling Extraction of Specific Types *)
 
 (** We can tell Coq to extract certain [Inductive] definitions to
@@ -55,7 +59,9 @@ Extract Constant beq_nat => "( = )".
 (** Important: It is entirely _your responsibility_ to make sure that
     the translations you're proving make sense.  For example, it might
     be tempting to include this one
+
       Extract Constant minus => "( - )".
+
     but doing so could lead to serious confusion!  (Why?)
 *)
 
@@ -64,19 +70,19 @@ Extraction "imp2.ml" ceval_step.
 (** Have a look at the file [imp2.ml].  Notice how the fundamental
     definitions have changed from [imp1.ml]. *)
 
-(* ############################################################## *)
+(* ################################################################# *)
 (** * A Complete Example *)
 
 (** To use our extracted evaluator to run Imp programs, all we need to
-    add is a tiny driver program that calls the evaluator and somehow
-    prints out the result.  
+    add is a tiny driver program that calls the evaluator and prints
+    out the result.
 
     For simplicity, we'll print results by dumping out the first four
     memory locations in the final state.
 
     Also, to make it easier to type in examples, let's extract a
     parser from the [ImpParser] Coq module.  To do this, we need a few
-    more declarations to set up the right correspondence between Coq
+    magic declarations to set up the right correspondence between Coq
     strings and lists of OCaml characters. *)
 
 Require Import Ascii String.
@@ -106,20 +112,20 @@ Extraction "imp.ml" empty_state ceval_step parse.
 
     Next, compile the driver together with the extracted code and
     execute it, as follows.
-<<
-	ocamlc -w -20 -w -26 -o impdriver imp.mli imp.ml impdriver.ml
-	./impdriver
->>
+
+        ocamlc -w -20 -w -26 -o impdriver imp.mli imp.ml impdriver.ml
+        ./impdriver
+
     (The [-w] flags to [ocamlc] are just there to suppress a few
     spurious warnings.) *)
 
-(* ############################################################## *)
+(* ################################################################# *)
 (** * Discussion *)
 
 (** Since we've proved that the [ceval_step] function behaves the same
     as the [ceval] relation in an appropriate sense, the extracted
-    program can be viewed as a _certified_ Imp interpreter.  (Of
-    course, the parser is not certified in any interesting sense,
-    since we didn't prove anything about it.) *)
+    program can be viewed as a _certified_ Imp interpreter.  Of
+    course, the parser we're using is not certified, since we didn't
+    prove anything about it! *)
 
-(** $Date: 2014-12-31 11:17:56 -0500 (Wed, 31 Dec 2014) $ *)
+(** $Date: 2016-05-26 12:03:56 -0400 (Thu, 26 May 2016) $ *)

@@ -12,31 +12,30 @@ type 'a option =
 | Some of 'a
 | None
 
-type sumbool =
-| Left
-| Right
+val add : nat -> nat -> nat
 
-val plus : nat -> nat -> nat
+val mul : nat -> nat -> nat
 
-val mult : nat -> nat -> nat
+val sub : nat -> nat -> nat
 
-val minus : nat -> nat -> nat
+module Nat :
+ sig
+  val eqb : nat -> nat -> bool
 
-val eq_nat_dec : nat -> nat -> sumbool
-
-val beq_nat : nat -> nat -> bool
-
-val ble_nat : nat -> nat -> bool
+  val leb : nat -> nat -> bool
+ end
 
 type id =
   nat
   (* singleton inductive, whose constructor was Id *)
 
-val eq_id_dec : id -> id -> sumbool
+val beq_id : id -> id -> bool
 
-type state = id -> nat
+type 'a total_map = id -> 'a
 
-val update : state -> id -> nat -> state
+val t_update : 'a1 total_map -> id -> 'a1 -> id -> 'a1
+
+type state = nat total_map
 
 type aexp =
 | ANum of nat
@@ -65,4 +64,3 @@ type com =
 | CWhile of bexp * com
 
 val ceval_step : state -> com -> nat -> state option
-

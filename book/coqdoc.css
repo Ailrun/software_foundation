@@ -51,7 +51,7 @@ body { padding: 0px 0px;
            padding-left: 8px; 
            margin-top: 5px;
            margin-bottom: 5px;
-           margin-top: 12px;
+           margin-top: 20px;
            font-size : 175% }
 
 .libtitle { background-color: rgb(60%,50%,100%);
@@ -59,8 +59,8 @@ body { padding: 0px 0px;
             border-style: solid;
             padding-bottom: 22px; 
             padding-left: 20px; 
-            padding-right: 20px; 
-            margin: 5px auto;
+            padding-right: 20px;
+            margin: 5px auto; 
             max-width: 13.5em; /* 15.5em; */
             text-align: center; 
             letter-spacing: 1px;
@@ -81,7 +81,7 @@ h3.section { background-color: rgb(90%,90%,100%);
              padding-left: 8px; 
              padding-top: 7px; 
              padding-bottom: 7px; 
-             margin-top: 5px;
+             margin-top: 9px;
              font-size : 115% }
 
 h4.section { 
@@ -92,6 +92,7 @@ h4.section {
                    padding-top: 5px; 
                    padding-bottom: 5px; 
 */
+                   margin-top: .2em; 
                    background-color: white;
                    padding-left: 0px; 
                    padding-top: 0px; 
@@ -109,6 +110,13 @@ h4.section {
              color: black;
              text-align: justify;
              border-style: plain}
+
+.quote { 
+    margin-left: auto;
+    margin-right: auto;
+    width: 24em;
+    color: darkred;
+} 
 
 .inlinecode { 
     display: inline;
@@ -156,6 +164,12 @@ h4.section {
     color: rgb(50%,50%,80%); 
 } 
 
+.inlineref { 
+    display: inline;
+/*    font-family: monospace; */
+    color: rgb(50%,50%,80%); 
+} 
+
 .show { 
     display: inline;
 /*    background-color: rgb(95%,95%,95%); */
@@ -180,8 +194,10 @@ h4.section {
 .quiz { 
     border: 4px;
     border-color: rgb(80%,80%,80%);
+/*
     margin-left: 40px;
     margin-right: 100px;
+*/
     padding: 5px;
     padding-left: 8px;
     padding-right: 8px;
@@ -210,22 +226,33 @@ h4.section {
 } 
 
 .code { 
+    padding-left: 0px;
+    font-size: 100%;
+    font-family: monospace;
+    line-height: 120%;
+ } 
+
+/* Working:
+.code { 
     display: block;
-    padding-left: 12px; 
+    padding-left: 0px; 
     font-size: 110%;
     font-family: monospace;
  } 
+*/
 
 .code-space {
-    max-width: 35em;
+    max-width: 40em;
     margin-top: 0em;
+    margin-bottom: -.5em;
     margin-left: auto;
     margin-right: auto;
 }
 
 .code-tight {
-    max-width: 35em;
-    margin-top: -0.8em;
+    max-width: 40em;
+    margin-top: -0.5em;
+    margin-bottom: -.3em;
     margin-left: auto;
     margin-right: auto;
 }
@@ -235,6 +262,11 @@ code.br {
   height: 5em;
 }
 */
+
+#main .citation {
+    color: rgb(70%,0%,0%); 
+    text-decoration: underline;
+}
 
 table.infrule {
   border: 0px;
@@ -261,8 +293,6 @@ tr.infrulemiddle hr {
     padding-left: 1em;
     padding-bottom: 0.1em
 }
-
-/* Pied de page */
 
 #footer { font-size: 65%;
           font-family: sans-serif; }

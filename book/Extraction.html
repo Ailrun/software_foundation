@@ -27,16 +27,18 @@
 
 <div class="paragraph"> </div>
 
-<a name="lab454"></a><h1 class="section">Basic Extraction</h1>
+<a name="lab362"></a><h1 class="section">Basic Extraction</h1>
 
 <div class="paragraph"> </div>
 
- In its simplest form, program extraction from Coq is completely straightforward. 
+ In its simplest form, extracting an efficient program from one
+    written in Coq is completely straightforward. 
+
 <div class="paragraph"> </div>
 
- First we say what language we want to extract into.  Options are OCaml (the
-     most mature), Haskell (which mostly works), and Scheme (a bit out
-     of date). 
+    First we say what language we want to extract into.  Options are
+    OCaml (the most mature), Haskell (which mostly works), and
+    Scheme (a bit out of date). 
 </div>
 <div class="code code-tight">
 
@@ -53,6 +55,8 @@ Now we load up the Coq environment with some definitions, either
 <div class="code code-tight">
 
 <br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Coq.Arith.Arith</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Coq.Arith.EqNat</span>.<br/>
 <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">SfLib</span>.<br/>
 <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">ImpCEvalFun</span>.<br/>
 
@@ -74,8 +78,8 @@ Finally, we tell Coq the name of a definition to extract and the
 <div class="doc">
 When Coq processes this command, it generates a file <span class="inlinecode"><span class="id" type="var">imp1.ml</span></span>
     containing an extracted version of <span class="inlinecode"><span class="id" type="var">ceval_step</span></span>, together with
-    everything that it recursively depends on.  Have a look at this
-    file now. 
+    everything that it recursively depends on.  Compile the present
+    <span class="inlinecode">.<span class="id" type="var">v</span></span> file and have a look at <span class="inlinecode"><span class="id" type="var">imp1.ml</span></span> now. 
 </div>
 <div class="code code-tight">
 
@@ -83,7 +87,7 @@ When Coq processes this command, it generates a file <span class="inlinecode"><s
 </div>
 
 <div class="doc">
-<a name="lab455"></a><h1 class="section">Controlling Extraction of Specific Types</h1>
+<a name="lab363"></a><h1 class="section">Controlling Extraction of Specific Types</h1>
 
 <div class="paragraph"> </div>
 
@@ -133,7 +137,7 @@ We can also extract defined constants to specific OCaml terms or
 
 <br/>
 <span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">plus</span> ⇒ "( + )".<br/>
-<span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">mult</span> ⇒ "( × )".<br/>
+<span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">mult</span> ⇒ "( * )".<br/>
 <span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">beq_nat</span> ⇒ "( = )".<br/>
 
 <br/>
@@ -172,13 +176,13 @@ Have a look at the file <span class="inlinecode"><span class="id" type="var">imp
 </div>
 
 <div class="doc">
-<a name="lab456"></a><h1 class="section">A Complete Example</h1>
+<a name="lab364"></a><h1 class="section">A Complete Example</h1>
 
 <div class="paragraph"> </div>
 
  To use our extracted evaluator to run Imp programs, all we need to
-    add is a tiny driver program that calls the evaluator and somehow
-    prints out the result.  
+    add is a tiny driver program that calls the evaluator and prints
+    out the result.
 
 <div class="paragraph"> </div>
 
@@ -189,7 +193,7 @@ Have a look at the file <span class="inlinecode"><span class="id" type="var">imp
 
     Also, to make it easier to type in examples, let's extract a
     parser from the <span class="inlinecode"><span class="id" type="var">ImpParser</span></span> Coq module.  To do this, we need a few
-    more declarations to set up the right correspondence between Coq
+    magic declarations to set up the right correspondence between Coq
     strings and lists of OCaml characters. 
 </div>
 <div class="code code-tight">
@@ -198,9 +202,9 @@ Have a look at the file <span class="inlinecode"><span class="id" type="var">imp
 <span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Ascii</span> <span class="id" type="var">String</span>.<br/>
 <span class="id" type="var">Extract</span> <span class="id" type="keyword">Inductive</span> <span class="id" type="var">ascii</span> ⇒ <span class="id" type="var">char</span><br/>
 [<br/>
-"(× If this appears, you're using Ascii internals. Please don't *) (fun (b0,b1,b2,b3,b4,b5,b6,b7) <span style="font-family: arial;">&rarr;</span> let f b i = if b then 1 lsl i else 0 in Char.chr (f b0 0 + f b1 1 + f b2 2 + f b3 3 + f b4 4 + f b5 5 + f b6 6 + f b7 7))"<br/>
+"(* If this appears, you're using Ascii internals. Please don't *) (fun (b<sub>0</sub>,b<sub>1</sub>,b<sub>2</sub>,b<sub>3</sub>,b<sub>4</sub>,b<sub>5</sub>,b<sub>6</sub>,b<sub>7</sub>) <span style="font-family: arial;">&rarr;</span> let f b i = if b then 1 lsl i else 0 in Char.chr (f b<sub>0</sub> 0 + f b<sub>1</sub> 1 + f b<sub>2</sub> 2 + f b<sub>3</sub> 3 + f b<sub>4</sub> 4 + f b<sub>5</sub> 5 + f b<sub>6</sub> 6 + f b<sub>7</sub> 7))"<br/>
 ]<br/>
-"(× If this appears, you're using Ascii internals. Please don't *) (fun f c <span style="font-family: arial;">&rarr;</span> let n = Char.code c in let h i = (n land (1 lsl i)) ≠ 0 in f (h 0) (h 1) (h 2) (h 3) (h 4) (h 5) (h 6) (h 7))".<br/>
+"(* If this appears, you're using Ascii internals. Please don't *) (fun f c <span style="font-family: arial;">&rarr;</span> let n = Char.code c in let h i = (n land (1 lsl i)) ≠ 0 in f (h 0) (h 1) (h 2) (h 3) (h 4) (h 5) (h 6) (h 7))".<br/>
 <span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">zero</span> ⇒ "'\000'".<br/>
 <span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">one</span> ⇒ "'\001'".<br/>
 <span class="id" type="var">Extract</span> <span class="id" type="var">Constant</span> <span class="id" type="var">shift</span> ⇒<br/>
@@ -243,8 +247,8 @@ Now let's run our generated Imp evaluator.  First, have a look at
     Next, compile the driver together with the extracted code and
     execute it, as follows.
 <pre>
-	ocamlc -w -20 -w -26 -o impdriver imp.mli imp.ml impdriver.ml
-	./impdriver
+        ocamlc -w -20 -w -26 -o impdriver imp.mli imp.ml impdriver.ml
+        ./impdriver
 </pre>
     (The <span class="inlinecode">-<span class="id" type="var">w</span></span> flags to <span class="inlinecode"><span class="id" type="var">ocamlc</span></span> are just there to suppress a few
     spurious warnings.) 
@@ -255,15 +259,15 @@ Now let's run our generated Imp evaluator.  First, have a look at
 </div>
 
 <div class="doc">
-<a name="lab457"></a><h1 class="section">Discussion</h1>
+<a name="lab365"></a><h1 class="section">Discussion</h1>
 
 <div class="paragraph"> </div>
 
  Since we've proved that the <span class="inlinecode"><span class="id" type="var">ceval_step</span></span> function behaves the same
     as the <span class="inlinecode"><span class="id" type="var">ceval</span></span> relation in an appropriate sense, the extracted
-    program can be viewed as a <i>certified</i> Imp interpreter.  (Of
-    course, the parser is not certified in any interesting sense,
-    since we didn't prove anything about it.) 
+    program can be viewed as a <i>certified</i> Imp interpreter.  Of
+    course, the parser we're using is not certified, since we didn't
+    prove anything about it! 
 <div class="paragraph"> </div>
 
   

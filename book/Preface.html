@@ -48,10 +48,10 @@
 
 <div class="paragraph"> </div>
 
-    The principal novelty of the course is that it is one hundred per
-    cent formalized and machine-checked: the entire text is literally
-    a script for Coq.  It is intended to be read alongside an
-    interactive session with Coq.  All the details in the text are
+    The principal novelty of the course is that it is one hundred
+    percent formalized and machine-checked: the entire text is
+    literally a script for Coq.  It is intended to be read alongside
+    an interactive session with Coq.  All the details in the text are
     fully formalized in Coq, and the exercises are designed to be
     worked using Coq.
 
@@ -75,12 +75,11 @@
 
  Building reliable software is hard.  The scale and complexity of
     modern systems, the number of people involved in building them,
-    and the range of demands placed on them make it extremely
-    difficult even to build software that is more or less correct,
-    much less to get it 100% correct.  At the same time, the
-    increasing degree to which information processing is woven into
-    every aspect of society continually amplifies the cost of bugs and
-    insecurities.
+    and the range of demands placed on them render it extremely
+    difficult to build software that is even more-or-less correct,
+    much less 100% correct.  At the same time, the increasing degree
+    to which information processing is woven into every aspect of
+    society continually amplifies the cost of bugs and insecurities.
 
 <div class="paragraph"> </div>
 
@@ -91,7 +90,7 @@
     programming) to design philosophies for libraries (e.g.,
     model-view-controller, publish-subscribe, etc.) and programming
     languages (e.g., object-oriented programming, aspect-oriented
-    programming, functional programming, ...) and to mathematical
+    programming, functional programming, ...) to mathematical
     techniques for specifying and reasoning about properties of
     software and tools for helping validate these properties.
 
@@ -113,14 +112,14 @@
 <div class="paragraph"> </div>
 
     (3) the idea of <i>functional programming</i>, both as a method of
-        programming and as a bridge between programming and logic;
+        programming that simplifies reasoning about programs and as a
+        bridge between programming and logic;
 
 <div class="paragraph"> </div>
 
     (4) formal techniques for <i>reasoning about the properties of
-        specific programs</i> (e.g., the fact that a loop terminates on
-        all inputs, or that a sorting function or a compiler obeys a
-        particular specification); and
+        specific programs</i> (e.g., the fact that a sorting function or
+        a compiler obeys some formal specification); and
 
 <div class="paragraph"> </div>
 
@@ -132,12 +131,14 @@
 <div class="paragraph"> </div>
 
     Each of these topics is easily rich enough to fill a whole course
-    in its own right; taking all of them together naturally means that
-    much will be left unsaid.  But we hope readers will find that the
-    themes illuminate and amplify each other in useful ways, and that
+    in its own right, so tackling all of them together naturally means
+    that much will be left unsaid.  Nevertheless, we hope readers will
+    find that the themes illuminate and amplify each other and that
     bringing them together creates a foundation from which it will be
     easy to dig into any of them more deeply.  Some suggestions for
-    further reading can be found in the <span class="inlinecode"><span class="id" type="var">Postscript</span></span> chapter. 
+    further reading can be found in the <a href="Postscript.html"><span class="inlineref">Postscript</span></a> chapter.
+    Bibliographic information for all cited works can be found in the
+    <a href="Bib.html"><span class="inlineref">Bib</span></a> chapter. 
 <div class="paragraph"> </div>
 
 <a name="lab3"></a><h2 class="section">Logic</h2>
@@ -203,10 +204,11 @@
 <div class="paragraph"> </div>
 
     This course is based around Coq, a proof assistant that has been
-    under development since 1983 at a number of French research labs
-    and universities.  Coq provides a rich environment for interactive
+    under development, mostly in France, since 1983 and that in recent
+    years has attracted a large community of users in both research
+    and industry.  Coq provides a rich environment for interactive
     development of machine-checked formal reasoning.  The kernel of
-    the Coq system is a simple proof-checker which guarantees that
+    the Coq system is a simple proof-checker, which guarantees that
     only correct deduction steps are performed.  On top of this
     kernel, the Coq environment provides high-level facilities for
     proof development, including powerful tactics for constructing
@@ -226,29 +228,29 @@
       about complex language definitions.  It has been used, for
       example, to check the security of the JavaCard platform,
       obtaining the highest level of common criteria certification,
-      and for formal specifications of the x86 and LLVM instruction
-      sets.
+      and for formal specifications of the x<sub>86</sub> and LLVM instruction
+      sets and programming languages such as C.
 
 <div class="paragraph"> </div>
 
 
 </li>
 <li> As an <i>environment for developing formally certified software</i>,
-      Coq has been used to build CompCert, a fully-verified optimizing
-      compiler for C, for proving the correctness of subtle algorithms
-      involving floating point numbers, and as the basis for
-      Certicrypt, an environment for reasoning about the security of
-      cryptographic algorithms.
+      Coq has been used, for example, to build CompCert, a
+      fully-verified optimizing compiler for C, for proving the
+      correctness of subtle algorithms involving floating point
+      numbers, and as the basis for CertiCrypt, an environment for
+      reasoning about the security of cryptographic algorithms.
 
 <div class="paragraph"> </div>
 
 
 </li>
-<li> As a <i>realistic environment for programming with dependent
-      types</i>, it has inspired numerous innovations.  For example, the
-      Ynot project at Harvard embeds "relational Hoare reasoning" (an
-      extension of the <i>Hoare Logic</i> we will see later in this course)
-      in Coq.
+<li> As a <i>realistic environment for functional programming with
+      dependent types</i>, it has inspired numerous innovations.  For
+      example, the Ynot project at Harvard embedded "relational Hoare
+      reasoning" (an extension of the <i>Hoare Logic</i> we will see later
+      in this course) in Coq.
 
 <div class="paragraph"> </div>
 
@@ -278,7 +280,7 @@
    Elan, Foc or Phox are examples of this tacit convention. In French,
    'coq' means rooster, and it sounds like the initials of the
    Calculus of Constructions (CoC) on which it is based."  The rooster
-   is also the national symbol of France, and "Coq" are the first
+   is also the national symbol of France, and C-o-q are the first
    three letters of the name of Thierry Coquand, one of Coq's early
    developers. 
 <div class="paragraph"> </div>
@@ -297,7 +299,7 @@
 
     Functional programming has been developed over many decades &mdash;
     indeed, its roots go back to Church's lambda-calculus, which was
-    invented in the 1930s before the era of the computer began!  But
+    invented in the 1930s, before there were even any computers!  But
     since the early '90s it has enjoyed a surge of interest among
     industrial engineers and language designers, playing a key role in
     high-value systems at companies like Jane St. Capital, Microsoft,
@@ -327,7 +329,7 @@
     concurrent programs, where every piece of mutable state that is
     shared between threads is a potential source of pernicious bugs.
     Indeed, a large part of the recent interest in functional
-    programming in industry is due to its simple behavior in the
+    programming in industry is due to its simpler behavior in the
     presence of concurrency.
 
 <div class="paragraph"> </div>
@@ -338,16 +340,17 @@
     running a computation has no effect other than producing a result,
     then it does not matter <i>where</i> it is run.  Similarly, if a data
     structure is never modified destructively, then it can be copied
-    freely, across cores or across the network.  Indeed, the MapReduce
-    idiom that lies at the heart of massively distributed query
-    processors like Hadoop and is used by Google to index the entire
-    web is a classic example of functional programming.
+    freely, across cores or across the network.  Indeed, the
+    "Map-Reduce" idiom, which lies at the heart of massively
+    distributed query processors like Hadoop and is used by Google to
+    index the entire web is a classic example of functional
+    programming.
 
 <div class="paragraph"> </div>
 
-    For purposes of this course, functional programming has yet
-    another significant attraction: it serves as a bridge between
-    logic and computer science.  Indeed, Coq itself can be viewed as a
+    For this course, functional programming has yet another
+    significant attraction: it serves as a bridge between logic and
+    computer science.  Indeed, Coq itself can be viewed as a
     combination of a small but extremely expressive functional
     programming language plus with a set of tools for stating and
     proving logical assertions.  Moreover, when we come to look more
@@ -360,8 +363,8 @@
 
 <div class="paragraph"> </div>
 
- The first third of the book is devoted to developing the
-    conceptual framework of logic and functional programming and
+ Approximately the first third of the book is devoted to developing
+    the conceptual framework of logic and functional programming and
     gaining enough fluency with Coq to use it for modeling and
     reasoning about nontrivial artifacts.  From this point on, we
     increasingly turn our attention to two broad topics of critical
@@ -374,18 +377,17 @@
 
     For both of these, the first thing we need is a way of
     representing programs as mathematical objects, so we can talk
-    about them precisely, and ways of describing their behavior in
-    terms of mathematical functions or relations.  Our tools for these
-    tasks are <i>abstract syntax</i> and <i>operational semantics</i>, a method
-    of specifying the behavior of programs by writing abstract
-    interpreters.  At the beginning, we work with operational
-    semantics in the so-called "big-step" style, which leads to
-    somewhat simpler and more readable definitions, in those cases
-    where it is applicable.  Later on, we switch to a more detailed
-    "small-step" style, which helps make some useful distinctions
-    between different sorts of "nonterminating" program behaviors and
-    which is applicable to a broader range of language features,
-    including concurrency.
+    about them precisely, together with ways of describing their
+    behavior in terms of mathematical functions or relations.  Our
+    tools for these tasks are <i>abstract syntax</i> and <i>operational
+    semantics</i>, a method of specifying programming languages by
+    writing abstract interpreters.  At the beginning, we work with
+    operational semantics in the so-called "big-step" style, which
+    leads to somewhat simpler and more readable definitions when it is
+    applicable.  Later on, we switch to a more detailed "small-step"
+    style, which helps make some useful distinctions between different
+    sorts of "nonterminating" program behaviors and is applicable to a
+    broader range of language features, including concurrency.
 
 <div class="paragraph"> </div>
 
@@ -398,40 +400,39 @@
 <div class="paragraph"> </div>
 
     First, we consider what it means to say that two Imp programs are
-    <i>equivalent</i> in the sense that they give the same behaviors for
-    all initial memories.  This notion of equivalence then becomes a
-    criterion for judging the correctness of <i>metaprograms</i> &mdash;
-    programs that manipulate other programs, such as compilers and
-    optimizers.  We build a simple optimizer for Imp and prove that it
-    is correct.
+    <i>equivalent</i> in the intuitive sense that they yield the same
+    behavior when started in any initial memory state.  This notion of
+    equivalence then becomes a criterion for judging the correctness
+    of <i>metaprograms</i> &mdash; programs that manipulate other programs, such
+    as compilers and optimizers.  We build a simple optimizer for Imp
+    and prove that it is correct.
 
 <div class="paragraph"> </div>
 
-    Second, we develop a methodology for proving that Imp programs
-    satisfy formal specifications of their behavior.  We introduce the
-    notion of <i>Hoare triples</i> &mdash; Imp programs annotated with pre- and
-    post-conditions describing what should be true about the memory in
-    which they are started and what they promise to make true about
-    the memory in which they terminate &mdash; and the reasoning principles
-    of <i>Hoare Logic</i>, a "domain-specific logic" specialized for
-    convenient compositional reasoning about imperative programs, with
-    concepts like "loop invariant" built in.
+    Second, we develop a methodology for proving that particular Imp
+    programs satisfy formal specifications of their behavior.  We
+    introduce the notion of <i>Hoare triples</i> &mdash; Imp programs annotated
+    with pre- and post-conditions describing what should be true about
+    the memory in which they are started and what they promise to make
+    true about the memory in which they terminate &mdash; and the reasoning
+    principles of <i>Hoare Logic</i>, a "domain-specific logic" specialized
+    for convenient compositional reasoning about imperative programs,
+    with concepts like "loop invariant" built in.
 
 <div class="paragraph"> </div>
 
     This part of the course is intended to give readers a taste of the
-    key ideas and mathematical tools used for a wide variety of
-    real-world software and hardware verification tasks.
-
+    key ideas and mathematical tools used in a wide variety of
+    real-world software and hardware verification tasks. 
 <div class="paragraph"> </div>
 
 <a name="lab7"></a><h2 class="section">Type Systems</h2>
 
 <div class="paragraph"> </div>
 
- Our final major topic, covering the last third of the course, is
-    <i>type systems</i>, a powerful set of tools for establishing
-    properties of <i>all</i> programs in a given language.
+ Our final major topic, covering approximately the last third of
+    the course, is <i>type systems</i>, a powerful set of tools for
+    establishing properties of <i>all</i> programs in a given language.
 
 <div class="paragraph"> </div>
 
@@ -441,15 +442,15 @@
     of modest power &mdash; modest enough that automatic checkers can be
     built into compilers, linkers, or program analyzers and thus be
     applied even by programmers unfamiliar with the underlying
-    theories.  (Other examples of lightweight formal methods include
+    theories.  Other examples of lightweight formal methods include
     hardware and software model checkers, contract checkers, and
     run-time property monitoring techniques for detecting when some
-    component of a system is not behaving according to specification).
+    component of a system is not behaving according to specification.
 
 <div class="paragraph"> </div>
 
     This topic brings us full circle: the language whose properties we
-    study in this part, called the <i>simply typed lambda-calculus</i>, is
+    study in this part, the <i>simply typed lambda-calculus</i>, is
     essentially a simplified model of the core of Coq itself!
 
 <div class="paragraph"> </div>
@@ -462,21 +463,13 @@
 </div>
 
 <div class="doc">
-<a name="lab8"></a><h1 class="section">Practicalities</h1>
-
-</div>
-<div class="code code-space">
-
-<br/>
-</div>
-
-<div class="doc">
-<a name="lab9"></a><h2 class="section">Chapter Dependencies</h2>
+<a name="lab8"></a><h2 class="section">Further Reading</h2>
 
 <div class="paragraph"> </div>
 
- A diagram of the dependencies between chapters and some suggested
-    paths through the material can be found in the file <span class="inlinecode"><span class="id" type="var">deps.html</span></span>. 
+ This text is intended to be self contained, but readers looking
+    for a deeper treatment of a particular topic will find suggestions
+    for further reading in the <a href="Postscript.html"><span class="inlineref">Postscript</span></a> chapter. 
 </div>
 <div class="code code-tight">
 
@@ -484,7 +477,19 @@
 </div>
 
 <div class="doc">
-<a name="lab10"></a><h2 class="section">System Requirements</h2>
+<a name="lab9"></a><h1 class="section">Practicalities</h1>
+
+<div class="paragraph"> </div>
+
+<a name="lab10"></a><h2 class="section">Chapter Dependencies</h2>
+
+<div class="paragraph"> </div>
+
+ A diagram of the dependencies between chapters and some suggested
+    paths through the material can be found in the file <a href="deps.html"><span class="inlineref"><span class="inlinecode"><span class="id" type="var">deps.html</span></span></span></a>. 
+<div class="paragraph"> </div>
+
+<a name="lab11"></a><h2 class="section">System Requirements</h2>
 
 <div class="paragraph"> </div>
 
@@ -494,7 +499,9 @@
 
 <ul class="doclist">
 <li> A current installation of Coq, available from the Coq home
-         page.  Everything should work with version 8.4.
+         page.  Everything should work with version 8.4.  (Version 8.5
+         will <i>not</i> work, due to a few incompatible changes in Coq
+         between 8.4 and 8.5.)
 
 <div class="paragraph"> </div>
 
@@ -516,23 +523,19 @@
 
 </li>
 <li> CoqIDE is a simpler stand-alone IDE.  It is distributed
-             with Coq, but on some platforms compiling it involves
-             installing additional packages for GUI libraries and
-             such. 
+             with Coq, so it should "just work" once you have Coq
+             installed.  It can also be compiled from scratch, but on
+             some platforms this may involve installing additional
+             packages for GUI libraries and such. 
 </li>
 </ul>
 
 </li>
 </ul>
 
-</div>
-<div class="code code-tight">
+<div class="paragraph"> </div>
 
-<br/>
-</div>
-
-<div class="doc">
-<a name="lab11"></a><h2 class="section">Exercises</h2>
+<a name="lab12"></a><h2 class="section">Exercises</h2>
 
 <div class="paragraph"> </div>
 
@@ -581,7 +584,7 @@
 
 <div class="paragraph"> </div>
 
-    <i>Please do not post solutions to the exercises in public places</i>:
+   <font color="red"> <i>Please do not post solutions to the exercises in any public place</i>: </font>
     Software Foundations is widely used both for self-study and for
     university courses.  Having solutions easily available makes it
     much less useful for courses, which typically have graded homework
@@ -589,27 +592,21 @@
     solutions to the exercises anyplace where they can be found by
     search engines.
 
-</div>
-<div class="code code-tight">
+<div class="paragraph"> </div>
 
-<br/>
-</div>
-
-<div class="doc">
-<a name="lab12"></a><h2 class="section">Downloading the Coq Files</h2>
+<a name="lab13"></a><h2 class="section">Downloading the Coq Files</h2>
 
 <div class="paragraph"> </div>
 
  A tar file containing the full sources for the "release version"
-    of these notes (as a collection of Coq scripts and HTML files) is
+    of this book (as a collection of Coq scripts and HTML files) is
     available here:
 <pre>
-        http://www.cis.upenn.edu/~bcpierce/sf   
+        <a href="http://www.cis.upenn.edu/~bcpierce/sf"><span class="inlineref">http://www.cis.upenn.edu/~bcpierce/sf</span></a>
 </pre>
-    If you are using the notes as part of a class, you may be given
-    access to a locally extended version of the files, which you
-    should use instead of the release version.
-
+    (If you are using the book as part of a class, your professor may
+    give you access to a locally modified version of the files, which
+    you should use instead of the release version.) 
 </div>
 <div class="code code-tight">
 
@@ -617,7 +614,7 @@
 </div>
 
 <div class="doc">
-<a name="lab13"></a><h1 class="section">Note for Instructors</h1>
+<a name="lab14"></a><h1 class="section">Note for Instructors</h1>
 
 <div class="paragraph"> </div>
 
@@ -627,12 +624,42 @@
 
 <div class="paragraph"> </div>
 
-    Please send an email to Benjamin Pierce describing yourself and
-    how you would like to use the materials, and including the result
-    of doing "htpasswd -s -n NAME", where NAME is your preferred user
-    name.  We'll set you up with read/write access to our subversion
-    repository and developers' mailing list; in the repository you'll
-    find a <span class="inlinecode"><span class="id" type="var">README</span></span> with further instructions. 
+    In order to keep the legalities simple and to have a single
+    point of responsibility in case the need should ever arise to
+    adjust the license terms, sublicense, etc., we ask all
+    contributors (i.e., everyone with access to the developers'
+    repository) to assign copyright in their contributions to the
+    appropriate "author of record," as follows:
+
+<div class="paragraph"> </div>
+
+        I hereby assign copyright in my past and future contributions
+        to the Software Foundations project to the Author of Record of
+        each volume or component, to be licensed under the same terms
+        as the rest of Software Foundations.  I understand that, at
+        present, the Authors of Record are as follows: For Volumes 1
+        and 2, known until 2016 as "Software Foundations" and from
+        2016 as (respectively) "Logical Foundations" and "Programming
+        Foundations," the Author of Record is Benjamin Pierce.  For
+        Volume 3, "Verified Functional Algorithms", the Author of
+        Record is Andrew W. Appel. For components outside of
+        designated Volumes (e.g., typesetting and grading tools and
+        other software infrastructure), the Author of Record is
+        Benjamin Pierce.
+
+<div class="paragraph"> </div>
+
+    To get started, please send an email to Benjamin Pierce, describing
+    yourself and how you plan to use the materials and including 
+       (1) the above copyright transfer text and 
+       (2) the result of doing "htpasswd -s -n NAME"
+    where NAME is your preferred user name.
+
+<div class="paragraph"> </div>
+
+    We'll set you up with access to the subversion repository and 
+    developers' mailing lists.  In the repository you'll find a 
+    file <span class="inlinecode"><span class="id" type="var">INSTRUCTORS</span></span> with further instructions. 
 </div>
 <div class="code code-tight">
 
@@ -640,20 +667,18 @@
 </div>
 
 <div class="doc">
-<a name="lab14"></a><h1 class="section">Translations</h1>
+<a name="lab15"></a><h1 class="section">Translations</h1>
 
 <div class="paragraph"> </div>
 
- Thanks to the efforts of a team of volunteer translators, <i>Software 
-    Foundations</i> can now be enjoyed in Japanese at <span class="inlinecode"><span class="id" type="var">http</span>://<span class="id" type="var">proofcafe.org</span>/<span class="id" type="var">sf</span></span>
-
+ Thanks to the efforts of a team of volunteer translators,
+    <i>Software Foundations</i> can now be enjoyed in Japanese at
+    <a href="http://proofcafe.org/sf"><span class="inlinecode"><span class="id" type="var">http</span>://<span class="id" type="var">proofcafe.org</span>/<span class="id" type="var">sf</span></span></a>.  A Chinese translation is underway. 
 <div class="paragraph"> </div>
 
   
 </div>
 <div class="code code-tight">
-
-<br/>
 </div>
 </div>
 
