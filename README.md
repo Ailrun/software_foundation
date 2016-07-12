@@ -6,8 +6,8 @@ There are some unsolved problems like 'informal proof'.
 
 If you have any questions or find problem in solution, please tell me via [issue](https://github.com/Ailrun/software_foundations_solution/issue).
 
-**IMPORTANT: This repository is written based on Coq8.4pl6.**  
-You can download Coq8.4pl6 in [this link](https://coq.inria.fr/coq-84).
+**IMPORTANT: This repository is written based on Coq8.5pl1.**  
+You can download Coq8.5pl1 in [this link](https://coq.inria.fr/download).
 
 ## Table Of Contents
 

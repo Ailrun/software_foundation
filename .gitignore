@@ -2,6 +2,7 @@
 .depend
 *.glob
 *.vo
+*.d
 
 # emacs temp file
 *~
