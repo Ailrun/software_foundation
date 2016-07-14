@@ -920,6 +920,8 @@ Proof. apply c2, c2, c1. Qed.
 
 Example R_new_example2: R 1 [1;2;1;0].
 Proof. apply c3, c2, c3, c3, c2, c2, c2, c1. Qed.
+
+End newR.
 (** [] *)
 
 
