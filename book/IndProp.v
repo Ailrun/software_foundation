@@ -2219,177 +2219,42 @@ Inductive repeats {X:Type} : list X -> Prop :=
     manage to do this, you will not need the [excluded_middle]
     hypothesis. *)
 
-Inductive index_of {X: Type} : X -> list X -> nat -> Prop :=
-| io_here: forall h t, index_of h (h::t) 0
-| io_next: forall x h t n, index_of x t n -> index_of x (h::t) (S n)
-.
-
-Theorem in_index_of : forall X (x: X) (l: list X),
-    In x l ->
-    exists n, index_of x l n.
-Proof.
-  intros X x l.
-  induction l as [| h t IHt].
-  - intros contra. inversion contra.
-  - intros HIn.
-    inversion HIn.
-    + exists 0. rewrite H. apply io_here.
-    + apply IHt in H as [n Hind].
-      exists (S n). apply io_next, Hind.
-Qed.
-
-Theorem index_of_in : forall X (x: X) (l: list X) (n: nat),
-    index_of x l n ->
-    In x l.
-Proof.
-  intros X x l n.
-  generalize dependent l.
-  induction n as [| n' IHn'].
-  - intros l Hind. inversion Hind.
-    left. reflexivity.
-  - intros l Hind. inversion Hind.
-    right. apply IHn', H2.
-Qed.
-
-Theorem index_of_eq : forall X (x y: X) (l: list X) (nx ny: nat),
-    index_of x l nx /\ index_of y l ny ->
-    nx = ny -> x = y.
-Proof.
-  intros X x y l nx.
-  generalize dependent l.
-  induction nx as [| nx' IHnx'].
-  - destruct l as [| h t].
-    + intros ny [contra _]. inversion contra.
-    + intros ny [Hindx Hindy].
-      intros Hny. rewrite <- Hny in Hindy.
-      inversion Hindx. inversion Hindy. reflexivity.
-  - destruct l as [| h t].
-    + intros ny [contra _]. inversion contra.
-    + intros ny [Hindx Hindy].
-      intros Hny. rewrite <- Hny in Hindy.
-      inversion Hindx. inversion Hindy. apply IHnx' with (l:= t) (ny:=nx').
-      * split.
-        { apply H1. }
-        { apply H6. }
-      * reflexivity.
-Qed.
-
-Inductive index_of_list {X: Type} : list X -> list X -> list nat -> Prop :=
-| iol_nil: forall rl,
-    index_of_list nil rl nil
-| iol_cons: forall vh vt rl ih it,
-    index_of vh rl ih -> index_of_list vt rl it -> index_of_list (vh::vt) rl (ih::it)
-.
-
-Theorem index_of_list__all_in : forall X (vl rl: list X) (il: list nat),
-    index_of_list vl rl il ->
-    (forall x, In x vl -> In x rl).
-Proof.
-  intros X vl rl il Hiol.
-  induction Hiol as [ rl
-                    | vh vt rl ih it Hindh Hindt IH
-                    ].
-  - intros x contra. inversion contra.
-  - intros x HIn.
-    apply in_index_of in HIn as [nx Hindx].
-    destruct (beq_natP nx 0) as [Hnx| Hnx].
-    + rewrite Hnx in Hindx. inversion Hindx.
-      apply index_of_in with (n:=ih). apply Hindh.
-    + destruct nx.
-      * exfalso. apply Hnx. reflexivity.
-      * inversion Hindx.
-        apply IH. apply index_of_in with (n:=nx). apply H1.
-Qed.
-
-Theorem all_in__index_of_list : forall X (vl rl: list X),
-    (forall x, In x vl -> In x rl) ->
-    (exists il, index_of_list vl rl il).
-Proof.
-  intros X vl.
-  induction vl as [| vlh vlt IHvlt].
-  - intros rl _. exists []. apply iol_nil.
-  - intros rl HIn.
-    assert (In vlh rl).
-    { apply HIn. left. reflexivity. }
-    apply in_index_of in H as [nvlh Hindvlh].
-    assert (forall x, In x vlt -> In x rl).
-    { intros x HIntemp. apply HIn. right. apply HIntemp. }
-    apply IHvlt in H as [ilt Hindilt].
-    exists (nvlh::ilt).
-    apply iol_cons.
-    + apply Hindvlh.
-    + apply Hindilt.
-Qed.
-
-Theorem index_of__index_of_list__in : forall X (il: list nat) (i: nat) (vl rl: list X) (v: X),
-    index_of_list vl rl il ->
-    index_of v rl i ->
-    In i il ->
-    In v vl.
-Proof.
-  intros X il.
-  induction il as [| ilh ilt IHilt].
-  - intros i vl _ v _ _ contra. inversion contra.
-  - intros i vl rl v Hiol Hio HIn.
-    inversion HIn.
-    + inversion Hiol.
-      replace v with vh.
-      * left. reflexivity.
-      * apply index_of_eq with (l:=rl) (nx:=ilh) (ny:=i).
-        split.
-        { apply H4. }
-        { apply Hio. }
-        { apply H. }
-    + inversion Hiol.
-      right.
-      apply IHilt with (i:=i) (rl:=rl).
-      * apply H5.
-      * apply Hio.
-      * apply H.
-Qed.
-
-Theorem nat_in_deterministic: forall (n: nat) (ns: list nat),
-    In n ns \/ ~ In n ns.
-Proof.
-  intros n ns.
-  induction ns as [| nsh nst IHnst].
-  - right. intros contra. inversion contra.
-  - destruct (beq_natP nsh n).
-    + left. left. apply H.
-    + inversion IHnst as [HIn| HnotIn].
-      * left. right. apply HIn.
-      * right. intros contra.
-        inversion contra.
-        { apply H, H0. }
-        { apply HnotIn, H0. }
-Qed.
-
 Theorem pigeonhole_principle: forall (X:Type) (l1 l2:list X),
-   (* excluded_middle -> *)
+   excluded_middle ->
    (forall x, In x l1 -> In x l2) ->
    length l2 < length l1 ->
    repeats l1.
 Proof.
    intros X l1. induction l1 as [|x l1' IHl1'].
-   - intros l2 _ contra. inversion contra.
-   - intros l2 HIn Hlen.
-     apply all_in__index_of_list in HIn as [il Hil].
-     inversion Hil as [| vh vt rl ih it Hx Hit].
-     assert (Hdet: In ih it \/ ~ In ih it).
-     { apply nat_in_deterministic. }
-     inversion Hdet as [HihIn| HihnotIn].
-     + apply rep_this.
-       apply index_of__index_of_list__in with (il:=it) (i:=ih) (rl:=l2).
-       * apply Hit.
-       * apply Hx.
-       * apply HihIn.
-     + apply rep_other.
-       apply index_of_in in Hx.
-       apply in_split in Hx as [lx1 [lx2 Hlx]].
-       apply IHl1' with (l2:= lx1 ++ lx2).
-       * apply index_of_list__all_in with (il:=it).
-Abort.         
-       
+   - intros l2 _ _ contra. inversion contra.
+   - intros l2 Hex HIn Hlen.
+     assert (In x l1' \/ ~ In x l1').
+     { apply Hex. }
+     inversion H as [HInx| HnotInx].
+     + apply rep_this, HInx.
+     + right.
+       assert (In x (x::l1')).
+       { left. reflexivity. }
+       apply HIn in H0. apply in_split in H0 as [lx1' [lx2' Hlx]].
+       apply IHl1' with (l2:=lx1'++lx2').
+       * apply Hex.
+       * intros x' HInx'.
+         assert (x' = x \/ x' <> x).
+         { apply Hex. }
+         assert (In x' (x::l1')).
+         { right. apply HInx'. }
+         apply HIn in H1. rewrite Hlx in H1. apply in_app_iff in H1. apply in_app_iff.
+         inversion H1.
+         { left. apply H2. }
+         { inversion H0.
+           - exfalso. apply HnotInx. rewrite <- H3. apply HInx'.
+           - inversion H2.
+             + exfalso. apply H3. symmetry. apply H4.
+             + right. apply H4. }
+       * rewrite Hlx in Hlen. rewrite app_length in Hlen. simpl in Hlen.
+         rewrite <- plus_n_Sm in Hlen.
+         rewrite app_length. apply Sn_le_Sm__n_le_m, Hlen.
+Qed.
 (** [] *)
 
 
