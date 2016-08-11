@@ -7,3 +7,10 @@
 
 # emacs temp file
 *~
+
+# tag files
+TAGS
+tags
+GTAGS
+GRTAGS
+GPATH
