@@ -3,6 +3,7 @@
 *.glob
 *.vo
 *.d
+*.aux
 
 # emacs temp file
 *~
