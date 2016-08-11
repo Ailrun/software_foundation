@@ -1,4 +1,4 @@
-(**` * Basics: Functional Programming in Coq *)
+(** * Basics: Functional Programming in Coq *)
 
 (* REMINDER:
 
